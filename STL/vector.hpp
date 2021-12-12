@@ -7,26 +7,24 @@
 
 namespace ft
 {
-    
     /* Шаблонный класс vector value*/
     template <class T, class A>
-	class Vector_val
+    class Vector_val
     {
-	protected:
-	    
+    protected:
+    
         Vector_val(A Al = A()) : Alval(Al)
         {
-
+        
         }
         /* Грубо говоря задали аллокатор */
-		
+
         //typedef typename A::template
         //   rebind<T>::other Alty;
         //Alty Alval;
         
-        
         typedef std::allocator<T> allocator_type;
-		allocator_type Alval;
+        allocator_type Alval;
 	};
 
 
