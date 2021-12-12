@@ -9,7 +9,7 @@ namespace ft
     typedef long int ptrdiff_t;
 
 	/* T* -> указатель T& -> ссылка */
-    template <class C, class T, class D = ptrdiff_t, class Pt = T*, class Rt = T&>  
+	template <class C, class T, class D = ptrdiff_t, class Pt = T*, class Rt = T&>  
 	struct iterator
 	{
 		typedef C		iterator_category;
