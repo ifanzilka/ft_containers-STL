@@ -169,14 +169,14 @@ namespace ft
             {
                 for(; 0 < N; --N, ++Q)
                     _base::Alval.construct(Q, X);
-		    }
+            }
             catch (...)
             {
                 Destroy(Qs, Q);
                 throw;
-		    }
-		    return (Q);
-	    }
+            }
+            return (Q);
+        }
 
         /* Указатель на T */
         /* На начало , на полседний элемент , на конец */
