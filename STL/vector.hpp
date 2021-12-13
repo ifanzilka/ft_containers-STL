@@ -3,7 +3,10 @@
 
 /* Подключаем для аллокатора */
 #include <memory>  
+
 #include "iterator.hpp"
+#include "enable_if.hpp"
+#include "is_integral.hpp"
 
 namespace ft
 {
@@ -104,22 +107,43 @@ namespace ft
                 Last = Ucopy(X.begin(), X.end(), First);
         }
 
-
+        /* Конструкторы с итераторами */
 		template<class It>
-			vector(It F, It L)
-				:_base() {
-					Construct(F, L, &F);
+		vector(It F, It L): _base()
+        {
+			Construct(F, L, &F);
 		}
-		template<class It>
-			vector(It F, It L, const allocator_type& Al)
-				:_base(Al) {
-					Construct(F, L, &F);
+		
+        template<class It>
+		vector(It F, It L, const allocator_type& Al): _base(Al)
+        {
+			Construct(F, L, &F);
 		}
-		~vector() {
+		
+        /* Деструктор */
+        ~vector()
+        {
 			Clear();
 		}
 
         protected:
+        
+        template <class It>
+        /* */
+		void Construct (It F, It L, typename ft::enable_if<ft::is_integral<It>::value, It>::type * = nullptr)
+        {
+			size_type N = (size_type)F;
+			if (Buy(N))
+			    Last = Ufill(First, N, (T)L);
+		}
+
+		template <class It>
+		/* */
+        void Construct (It F, It L, typename ft::enable_if<!ft::is_integral<It>::value, It>::type * = nullptr)
+        {
+			Buy(0);
+			insert(begin(), F, L);
+		}
         
         /* Выделяем память и заполянем нулями*/
         bool Buy(size_type N)
@@ -143,6 +167,18 @@ namespace ft
                 _base::Alval.destroy(F);
         }
         
+		void Clear()
+        {
+            if (First != 0)
+            {
+                Destroy(First, Last);
+                /* Очищаем область */
+                _base::Alval.deallocate(First, End - First);
+            }
+            First = 0, Last = 0, End = 0;
+        }
+
+
         /* Копируем зачения от First до Last*/
         template<class It>
 		pointer Ucopy(It F, It L, pointer Q)
