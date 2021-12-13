@@ -32,10 +32,10 @@ namespace ft
     
     /* T - > тип данных в векторе All -> аллокатор  для выдеения памяти*/
     template<class T, class Alloc = std::allocator<T> > 
-    class vector
+    class vector : public Vector_val <T, Alloc> 
     {
     public:
-        typedef T                                           value_type;
+        //typedef T                                           value_type;
         typedef Alloc                                       allocator_type;
         
         /* Класс от которого будем наследоваться*/       
@@ -126,10 +126,231 @@ namespace ft
 			Clear();
 		}
 
-        protected:
-        
+        /* Переопределение оператора = */
+        vector& operator = (const vector& X)
+        {
+		    if (this == &X)
+                ;
+		    else if (X.size() == 0)
+		    	Clear();
+		    else if (X.size() <= size())
+            {
+                /* Если наш вектор больше чем тот откуда присваивание */
+		    	pointer Q = Ucopy(X.begin(), X.end(), First);
+		    	Destroy(Q, Last);
+		    	Last = First + X.size();
+		    }
+		    else
+            {
+                /* Если размер нового ветора больше */
+		    	Destroy(First, Last);
+		    	_base::Alval.deallocate(First, End - First);
+		    	if(Buy(X.size()))
+		    		Last = Ucopy(X.begin(), X.end(), First);
+		    }
+		    return (*this);
+        }
+
+
+
+        /******************************************************/
+        /*                      Capacity                     */
+        /*****************************************************/
+
+
+        /* Возвращает размер вектора */
+        size_type size() const
+        {
+		    if (First == 0)
+                return (0);
+			return (Last - First);
+		}
+
+        /* Возвращет размер аллоцированной памяти */
+        size_type max_size() const
+        {
+		    return (_base::Alval.max_size());
+		}
+
+        /* Изменение размера контейнера чтобы он содержал n элементов */
+    	void resize(size_type N, T X)
+        {
+			if (size() < N)
+                insert(end(), N - size(), X);
+			else if (N < size())
+				erase(begin() + N, end());
+		}
+
+		void resize(size_type N)
+        {
+			resize(N, T());
+		}
+
+        /* Возвращаемый размер выделенной емкости хранилища */
+        size_type capacity() const
+        {
+		    if (First == 0)
+			    return (0);
+			return (End - First);
+		}
+
+        /* Проверяет, является ли вектор пустым */
+        bool empty() const
+        {
+		    return (size() == 0);
+		}
+
+        /* Запросить изменение вместимости */
+    	void reserve(size_type N)
+        {
+		    if (max_size() < N) // Вызываю исключение
+			    Xlen();
+		    else if (capacity() < N)
+		    {
+			    pointer Q = _base::Alval.allocate(N, (void *)0);
+			    try
+                {
+				    Ucopy(begin(), end(), Q);
+			    }
+			    catch (...)
+			    {
+				    _base::Alval.deallocate(Q, N);
+				    throw ;
+			    }
+			    if (First != 0)
+                {
+				    Destroy(First, Last);
+				    _base::Alval.deallocate(First, End - First);
+			    }
+			    End = Q + N;
+			    Last = Q + size();
+			    First = Q;
+		    }
+    	}
+
+        /******************************************************/
+        /*                    Modifiers                      */
+        /*****************************************************/
+
+        /* Assign */
+        /* Присваивает вектору новое содержимое, заменяя его текущее содержимое и соответствующим образом изменяя его размер. */
+		
         template <class It>
-        /* */
+		void assign(It F, It L)
+        {
+			Assign(F, L, &F);
+		}
+        
+        void assign(size_type N, const T& X)
+        {
+			T Tx = X;
+			erase(begin(), end());
+			insert(begin(), N, Tx);
+		}
+
+        /* Добавить элемент в конeц */
+        void push_back(const T& X)
+        {
+			insert(end(), X);
+		}
+
+        /* Удалить последний элемент */
+		void pop_back()
+        {
+		    erase(end() -1);
+		}
+
+
+        /* Добавление элемента */
+        iterator insert(iterator P, const T& X)
+        {
+			size_type Off;
+			if (size() == 0)
+				Off = 0;
+			else
+				Off = P - begin();
+			insert(P, (size_type)1, X);
+			return (begin() + Off);
+		}
+
+		void insert(iterator P, size_type M, const T& X)
+        {
+			T Tx = X;
+			size_type N = capacity();
+			if (M == 0)
+				;
+			else if (max_size() - size() < M)
+				Xlen();
+			else if (N < size() + M)
+            {
+				if ((max_size() - N / 2) < N)
+					N = 0;
+				else
+					N = N + N / 2;
+				if (N < size() + M)
+					N = size() + M;
+				pointer S = _base::Alval.allocate(N, (void *) 0);
+				pointer Q;
+				try
+                {
+					Q = Ucopy(begin(), P, S);
+					Q = Ufill(Q, M, Tx);
+					Ucopy(P, end(), Q);
+				}
+				catch (...)
+				{
+					Destroy(S, Q);
+					_base::Alval.deallocate(S, N);
+					throw ;
+				}
+				if (First != 0)
+                {
+					Destroy(First, Last);
+					_base::Alval.deallocate(First, End - First);
+				}
+				End = S + N;
+				Last = S + size() + M;
+				First = S;
+			}
+			else if ((size_type)(end() - P) < M)
+            {
+				Ucopy(P, end(), P.base() + M);
+				try
+                {
+					Ufill(Last, M - (end() - P), Tx);
+				}
+				catch (...)
+                {
+					Destroy(P.base() + M, Last + M);
+					throw;
+				}
+				Last += M;
+				ft::fill(P, end() - M, Tx);
+			}
+			else
+            {
+				iterator Oend = end();
+				Last = Ucopy(Oend - M, Oend, Last);
+				ft::copy_backward(P, Oend - M, Oend);
+				ft::fill(P, P + M, Tx);
+			}
+		}
+
+		template <class It>
+		void insert (iterator P, It F, It L)
+        {
+			Fork(P, F, L, &F);
+		}
+
+
+
+        protected:
+
+        /* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/ 
+        /* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/ 
+        /* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/ 
+        template <class It>
+        /* Вызывается этот конструктор если */
 		void Construct (It F, It L, typename ft::enable_if<ft::is_integral<It>::value, It>::type * = nullptr)
         {
 			size_type N = (size_type)F;
@@ -137,12 +358,15 @@ namespace ft
 			    Last = Ufill(First, N, (T)L);
 		}
 
+        /* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/ 
+        /* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/ 
+        /* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/ 
 		template <class It>
-		/* */
+		/* Вызывается этот конструктор если */
         void Construct (It F, It L, typename ft::enable_if<!ft::is_integral<It>::value, It>::type * = nullptr)
         {
 			Buy(0);
-			insert(begin(), F, L);
+			//insert(begin(), F, L);
 		}
         
         /* Выделяем память и заполянем нулями*/
@@ -167,6 +391,7 @@ namespace ft
                 _base::Alval.destroy(F);
         }
         
+        /* Очищаю память */
 		void Clear()
         {
             if (First != 0)
@@ -177,7 +402,6 @@ namespace ft
             }
             First = 0, Last = 0, End = 0;
         }
-
 
         /* Копируем зачения от First до Last*/
         template<class It>
@@ -214,8 +438,26 @@ namespace ft
             return (Q);
         }
 
-        /* Указатель на T */
-        /* На начало , на полседний элемент , на конец */
+        /*****************************************************/
+        /*                    Utils                          */
+        /*****************************************************/
+
+        /* */
+        void Xlen() const
+        {
+            throw "vector<T> too long";
+		    //throw std::length_error("vector<T> too long");
+		}
+		
+        /* */
+        void Xran() const
+        {
+            throw "vector<T> subscript";
+		    //throw std::length_error("vector<T> subscript");
+		}
+
+
+        /* Указатель на T .На начало , на полседний элемент , на конец */
         pointer First, Last, End;
     };
 }
