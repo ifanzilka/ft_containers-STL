@@ -28,6 +28,13 @@ namespace ft
         
         typedef std::allocator<T> allocator_type;
         allocator_type Alval;
+
+        /*  Use function : 
+        **  Alval.allocate / Alval.deallocate
+        **  Alval.destroy
+        **  Alval.max_size
+        */  
+
 	};
     
     /* T - > тип данных в векторе All -> аллокатор  для выдеения памяти*/
@@ -35,7 +42,6 @@ namespace ft
     class vector : public Vector_val <T, Alloc> 
     {
     public:
-        //typedef T                                           value_type;
         typedef Alloc                                       allocator_type;
         
         /* Класс от которого будем наследоваться*/       
@@ -153,6 +159,60 @@ namespace ft
 
 
 
+        allocator_type get_allocator() const
+        {
+			return (_base::Alval);
+		}
+
+
+        /******************************************************/
+        /*                      Iterators                     */
+        /*****************************************************/
+
+        iterator begin()
+        {
+			return (iterator(First));
+		}
+
+		const_iterator begin() const
+        {
+			return (const_iterator(First));
+		}
+
+		iterator end()
+        {
+			return (iterator(Last));
+		}
+
+		const_iterator end() const
+        {
+			return (const_iterator(Last));
+		}
+
+		reverse_iterator rbegin()
+        {
+			return (reverse_iterator(end()));
+		}
+
+		const_reverse_iterator rbegin() const
+        {
+			return (const_reverse_iterator(end()));
+		}
+
+		reverse_iterator rend()
+        {
+			return (reverse_iterator(begin()));
+		}
+		
+        const_reverse_iterator rend() const
+        {
+			return (const_reverse_iterator(begin()));
+		}
+
+
+
+
+
         /******************************************************/
         /*                      Capacity                     */
         /*****************************************************/
@@ -172,13 +232,10 @@ namespace ft
 		    return (_base::Alval.max_size());
 		}
 
-        /* Изменение размера контейнера чтобы он содержал n элементов */
+        /* Изменение размера контейнера чтобы он содержал n элементов !!!!*/
     	void resize(size_type N, T X)
         {
-			if (size() < N)
-                insert(end(), N - size(), X);
-			else if (N < size())
-				erase(begin() + N, end());
+
 		}
 
 		void resize(size_type N)
@@ -210,7 +267,7 @@ namespace ft
 			    pointer Q = _base::Alval.allocate(N, (void *)0);
 			    try
                 {
-				    Ucopy(begin(), end(), Q);
+				    //Ucopy(begin(), end(), Q);
 			    }
 			    catch (...)
 			    {
@@ -229,120 +286,158 @@ namespace ft
     	}
 
         /******************************************************/
-        /*                    Modifiers                      */
+        /*                 Element access                    */
         /*****************************************************/
 
-        /* Assign */
-        /* Присваивает вектору новое содержимое, заменяя его текущее содержимое и соответствующим образом изменяя его размер. */
+        /* Пеоеопределение операторов */
+        const_reference operator[] (size_type P) const
+        {
+			
+		}
+
+		reference operator[] (size_type P)
+        {
+			
+		}
+
+        /* N element*/
+        const_reference at(size_type P) const
+        {
+			
+		}
+
+		reference at(size_type P)
+        {
+				
+		}
+
+        /* first element */
+        reference front()
+        {
+		    
+		}
+
+		const_reference front() const
+        {
+			
+		}
+
+		/* last element */
+        reference back()
+        {
+		    
+		}
+
 		
+        const_reference back() const
+        {
+		
+		}
+
+
+
+        /******************************************************/
+        /*                    Modifiers                      */
+        /*****************************************************/
+        
+        /***********/
+        /* Assign */
+        /**********/
+        /* Присваивает вектору новое содержимое, заменяя его текущее содержимое и соответствующим образом изменяя его размер. */
         template <class It>
 		void assign(It F, It L)
         {
-			Assign(F, L, &F);
+		
 		}
         
         void assign(size_type N, const T& X)
         {
-			T Tx = X;
-			erase(begin(), end());
-			insert(begin(), N, Tx);
+			
 		}
+
+        /************/
+        /* push_back*/
+        /***********/
 
         /* Добавить элемент в конeц */
         void push_back(const T& X)
         {
-			insert(end(), X);
+			
 		}
+
+        /************/
+        /* pop_back*/
+        /***********/
 
         /* Удалить последний элемент */
 		void pop_back()
         {
-		    erase(end() -1);
+		    
 		}
 
+
+
+        /************/
+        /* Insert   */
+        /***********/
 
         /* Добавление элемента */
         iterator insert(iterator P, const T& X)
         {
-			size_type Off;
-			if (size() == 0)
-				Off = 0;
-			else
-				Off = P - begin();
-			insert(P, (size_type)1, X);
-			return (begin() + Off);
+		
 		}
 
 		void insert(iterator P, size_type M, const T& X)
         {
-			T Tx = X;
-			size_type N = capacity();
-			if (M == 0)
-				;
-			else if (max_size() - size() < M)
-				Xlen();
-			else if (N < size() + M)
-            {
-				if ((max_size() - N / 2) < N)
-					N = 0;
-				else
-					N = N + N / 2;
-				if (N < size() + M)
-					N = size() + M;
-				pointer S = _base::Alval.allocate(N, (void *) 0);
-				pointer Q;
-				try
-                {
-					Q = Ucopy(begin(), P, S);
-					Q = Ufill(Q, M, Tx);
-					Ucopy(P, end(), Q);
-				}
-				catch (...)
-				{
-					Destroy(S, Q);
-					_base::Alval.deallocate(S, N);
-					throw ;
-				}
-				if (First != 0)
-                {
-					Destroy(First, Last);
-					_base::Alval.deallocate(First, End - First);
-				}
-				End = S + N;
-				Last = S + size() + M;
-				First = S;
-			}
-			else if ((size_type)(end() - P) < M)
-            {
-				Ucopy(P, end(), P.base() + M);
-				try
-                {
-					Ufill(Last, M - (end() - P), Tx);
-				}
-				catch (...)
-                {
-					Destroy(P.base() + M, Last + M);
-					throw;
-				}
-				Last += M;
-				ft::fill(P, end() - M, Tx);
-			}
-			else
-            {
-				iterator Oend = end();
-				Last = Ucopy(Oend - M, Oend, Last);
-				ft::copy_backward(P, Oend - M, Oend);
-				ft::fill(P, P + M, Tx);
-			}
+			
 		}
 
 		template <class It>
 		void insert (iterator P, It F, It L)
         {
-			Fork(P, F, L, &F);
+
 		}
 
 
+        /************/
+        /* Erase   */
+        /***********/
+
+        /* Стирание элементов*/
+	    iterator erase(iterator P)
+        {
+	
+		}
+		
+        iterator erase(iterator F, iterator L)
+        {
+
+		}
+
+        /***********/
+        /* Swap    */
+        /***********/
+
+        /* Поменять местами содержимое */
+        void swap(vector &X)
+        {
+
+		}
+        
+
+        /***********/
+        /* Clear   */
+        /***********/
+        
+        /* Очищаем */
+        void clear()
+        {
+		
+		}
+
+        /***************/
+        /* PROTECTED   */
+        /***************/
 
         protected:
 
@@ -384,13 +479,7 @@ namespace ft
             }
         }
         
-        /* Вызываем деструкторы */
-        void Destroy(pointer F, pointer L)
-        {
-            for(; F != L; ++F)
-                _base::Alval.destroy(F);
-        }
-        
+
         /* Очищаю память */
 		void Clear()
         {
@@ -402,6 +491,14 @@ namespace ft
             }
             First = 0, Last = 0, End = 0;
         }
+
+        /* Вызываем деструкторы  */
+        void Destroy(pointer F, pointer L)
+        {
+            for(; F != L; ++F)
+                _base::Alval.destroy(F);
+        }
+
 
         /* Копируем зачения от First до Last*/
         template<class It>
@@ -442,20 +539,19 @@ namespace ft
         /*                    Utils                          */
         /*****************************************************/
 
-        /* */
+        /* lengt error*/
         void Xlen() const
         {
             throw "vector<T> too long";
 		    //throw std::length_error("vector<T> too long");
 		}
 		
-        /* */
+        /*  Out of range */
         void Xran() const
         {
             throw "vector<T> subscript";
 		    //throw std::length_error("vector<T> subscript");
 		}
-
 
         /* Указатель на T .На начало , на полседний элемент , на конец */
         pointer First, Last, End;
