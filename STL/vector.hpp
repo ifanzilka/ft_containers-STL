@@ -4,6 +4,10 @@
 /* Подключаем для аллокатора */
 #include <memory>  
 
+/* Utils (swap) */
+
+#include "STL42_Utils.hpp"
+
 #include "iterator.hpp"
 #include "enable_if.hpp"
 #include "is_integral.hpp"
@@ -131,7 +135,7 @@ namespace ft
         {
 			Clear();
 		}
-
+        
         /* Переопределение оператора = */
         vector& operator = (const vector& X)
         {
@@ -165,10 +169,11 @@ namespace ft
 		}
 
 
-        /******************************************************/
-        /*                      Iterators                     */
+        /*****************************************************/
+        /*                      Iterators                    */
         /*****************************************************/
 
+        /* Здесь мы вызваем конуструкторы итераторов с нужным типом */
         iterator begin()
         {
 			return (iterator(First));
@@ -210,9 +215,6 @@ namespace ft
 		}
 
 
-
-
-
         /******************************************************/
         /*                      Capacity                     */
         /*****************************************************/
@@ -235,7 +237,10 @@ namespace ft
         /* Изменение размера контейнера чтобы он содержал n элементов !!!!*/
     	void resize(size_type N, T X)
         {
-
+            if (size() < N)
+				insert (end(), N - size(), X);
+			else if (N < size())
+				erase (begin() + N, end());
 		}
 
 		void resize(size_type N)
@@ -290,48 +295,56 @@ namespace ft
         /*****************************************************/
 
         /* Пеоеопределение операторов */
-        const_reference operator[] (size_type P) const
-        {
-			
+        const_reference operator[] (size_type N) const
+        {   
+            /* К итератору прибавили N  и разыменовали */
+            return (*(begin() + N));
 		}
 
-		reference operator[] (size_type P)
+		reference operator[] (size_type N)
         {
-			
+            /* К итератору прибавили N  и разыменовали */
+            return (*(begin() + N));
 		}
 
-        /* N element*/
-        const_reference at(size_type P) const
+        /* N element , отличие от [] тем что проверяется диапозон и выкидыаетя исключение out_of_range */
+        const_reference at(size_type N) const
         {
-			
+			if (size() <= N)
+                Xran();
+			return (*(begin() + N));
 		}
 
-		reference at(size_type P)
+		reference at(size_type N)
         {
-				
+            if (size() <= N)
+				Xran();
+			return (*(begin() + N));	
 		}
 
-        /* first element */
+        /* Возращает первый эдлемент */
         reference front()
         {
-		    
+            /* Создали итератор и разыменовали */
+		    return(*begin());
 		}
 
 		const_reference front() const
         {
-			
+            /* Создали итератор и разыменовали */
+			return(*begin());
 		}
 
-		/* last element */
+		/* Возвращает последний элемент */
         reference back()
         {
-		    
+		    return(*end() - 1);
 		}
 
 		
         const_reference back() const
         {
-		
+            return(*end() - 1);
 		}
 
 
@@ -372,7 +385,7 @@ namespace ft
         /* Удалить последний элемент */
 		void pop_back()
         {
-		    
+		    erase(end() -1);
 		}
 
 
@@ -395,7 +408,7 @@ namespace ft
 		template <class It>
 		void insert (iterator P, It F, It L)
         {
-
+            
 		}
 
 
@@ -406,12 +419,23 @@ namespace ft
         /* Стирание элементов*/
 	    iterator erase(iterator P)
         {
-	
+            /* копируем элементы с позции P + 1 (грубо говоря смещаем на одну позцицию)*/
+            ft::copy(P + 1, end(), P);
+			Destroy(Last - 1, Last);
+			--Last;
+			return (P);
 		}
 		
+        /*  Стираем в промежутке */
         iterator erase(iterator F, iterator L)
         {
-
+        	if (F != L)
+            {
+				pointer S  = ft::copy(L, end(), F.base());
+				Destroy(S, Last);
+				Last = S;
+			}
+			return (F);
 		}
 
         /***********/
@@ -421,6 +445,18 @@ namespace ft
         /* Поменять местами содержимое */
         void swap(vector &X)
         {
+            /* Если совпали алокаторы*/
+            if (_base::Alval == X.Alval)
+            {
+                ft::swap(First, X.First);
+				ft::swap(Last, X.Last);
+				ft::swap(End, X.End);
+            }
+            else
+            {
+                vector Tmp = *this;
+				*this = X, X = Tmp;
+            }
 
 		}
         
@@ -432,7 +468,7 @@ namespace ft
         /* Очищаем */
         void clear()
         {
-		
+            erase(begin(), end());
 		}
 
         /***************/
@@ -444,6 +480,7 @@ namespace ft
         /* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/ 
         /* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/ 
         /* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/ 
+        
         template <class It>
         /* Вызывается этот конструктор если */
 		void Construct (It F, It L, typename ft::enable_if<ft::is_integral<It>::value, It>::type * = nullptr)
@@ -464,6 +501,7 @@ namespace ft
 			//insert(begin(), F, L);
 		}
         
+
         /* Выделяем память и заполянем нулями*/
         bool Buy(size_type N)
         {
@@ -478,7 +516,7 @@ namespace ft
                 return (true);
             }
         }
-        
+
 
         /* Очищаю память */
 		void Clear()

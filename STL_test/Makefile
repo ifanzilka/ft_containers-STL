@@ -15,6 +15,11 @@ all			: $(NAME)
 $(NAME)		:  $(OBJ)
 	$(CXX) $(CXXFLAGS) $(OBJ) -o $@
 
+start: all
+		@./test
+		@rm *.o
+		@rm test
+
 clean		:
 			rm -rf $(OBJ)
 

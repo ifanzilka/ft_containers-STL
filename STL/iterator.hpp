@@ -1,7 +1,11 @@
 #ifndef _FT42ITERATOR
 #define _FT42ITERATOR
-
 #include "iterator_tag.hpp"
+
+/*
+** Iterator такая штука которая хранит указатель на тип 
+**
+*/
 
 
 namespace ft
@@ -130,20 +134,28 @@ namespace ft
 		N += L - F;
 	}
 
-	/* TEMPLATE CLASS random_acsees_iterator */
+	/* Шаблонный класс random_acsees_iterator */
 
 	template <class T, class D, class Pt, class Rt, class Pt2, class Rt2>
 	class random_acsees_iterator : public iterator<random_access_iterator_tag, T, D, Pt, Rt> 
 	{
 		public:
+
 			typedef random_acsees_iterator<T, D, Pt, Rt, Pt2, Rt2> Myt;
 			
-			random_acsees_iterator() {};
-			explicit random_acsees_iterator(Pt P): current (P) 
+			/* Конуструктор */
+			random_acsees_iterator()
 			{
 
+			};
+
+			/*Вызывает при подачи указателя на тип */
+			explicit random_acsees_iterator(Pt P): current (P) 
+			{
+	
 			}
 
+			/*Вызывает при подачи итератора (просто инициализирую текущий поинтер так же)*/
 			random_acsees_iterator(const random_acsees_iterator<T, D, Pt, Rt, Pt2, Rt2> &X): current (X.base())
 			{
 
@@ -155,11 +167,13 @@ namespace ft
 
 			}
 
+			/* Возвращаем указатель */
 			Pt base() const
 			{ 
 				return (current);
 			}
 			
+			/* Возвращаем ссылку при разыменовании  */
 			Rt operator * () const
 			{
 				return (*current);
@@ -170,6 +184,7 @@ namespace ft
 				return (&**this);
 			}
 			
+			/* Инкриментируем */
 			Myt& operator++ ()
 			{
 				++current;
@@ -183,6 +198,7 @@ namespace ft
 				return (Tmp);
 			}
 			
+			/* Дикрементируем */
 			Myt& operator-- ()
 			{
 				--current;
@@ -261,94 +277,122 @@ namespace ft
 				return (current - Y.current);
 			}
 		protected:
+			/* pointer */
 			Pt current;
 	};
 	
-	template <class T, class D, class Pt, class Rt,
-		class Pt2, class Rt2, class D0> inline
-		random_acsees_iterator <T, D, Pt, Rt, Pt2, Rt2>
-		operator + (D0 N,
-			const random_acsees_iterator<T, D, Pt, Rt, Pt2, Rt2>& Y)
-					{ return (Y + static_cast<D>(N)); }
+	template <class T, class D, class Pt, class Rt, class Pt2, class Rt2, class D0> inline
+	random_acsees_iterator <T, D, Pt, Rt, Pt2, Rt2>
+	operator + (D0 N, const random_acsees_iterator<T, D, Pt, Rt, Pt2, Rt2>& Y)
+	{
+		return (Y + static_cast<D>(N));
+	}
 
 	
-	/* TEMPLATE CLASS reverse_iterator */
+	/* Шаблонный класс reverse_iterator */
 
 	template <class RanIt>
-		class reverse_iterator: public iterator <
-		typename iterator_traits<RanIt>::iterator_category,
-		typename iterator_traits<RanIt>::value_type,
-		typename iterator_traits<RanIt>::difference_type,
-		typename iterator_traits<RanIt>::pointer,
-		typename iterator_traits<RanIt>::reference>
-		{
-			public:
-				typedef reverse_iterator<RanIt> Myt;
-				typedef typename iterator_traits<RanIt>::difference_type D;
-				typedef typename iterator_traits<RanIt>::pointer Pt;
-				typedef typename iterator_traits<RanIt>::reference Rt;
-				typedef RanIt iterator_type;
+	/* Наследуюсь */
+	class reverse_iterator: public iterator <typename iterator_traits<RanIt>::iterator_category, typename iterator_traits<RanIt>::value_type, typename iterator_traits<RanIt>::difference_type, typename iterator_traits<RanIt>::pointer, typename iterator_traits<RanIt>::reference>
+	{
+		public:
+			typedef 			reverse_iterator<RanIt> Myt;
+			typedef typename	iterator_traits<RanIt>::difference_type D;
+			typedef typename 	iterator_traits<RanIt>::pointer Pt;
+			typedef typename 	iterator_traits<RanIt>::reference Rt;
+			typedef RanIt 		iterator_type; /* Обычный итератор */
 
-				reverse_iterator(){}
-				explicit reverse_iterator(RanIt X)
-				:current(X) {}
-				RanIt base() const
-					{return (current);}
-				template <class U>
-					reverse_iterator (const reverse_iterator<U>& X)
-					: current (X.base()){}
+			reverse_iterator()
+			{
 
-				Rt operator * () const {
-					RanIt Tmp = current;
-					return (*--Tmp);
-				}
-				Pt operator -> () const {
-					return (&**this);
-				}
-				Myt& operator ++ () {
-					--current;
-					return (*this);
-				}
-				Myt operator ++ (int) {
-					Myt Tmp = *this;
-					--current;
-					return (Tmp);
-				}
-				Myt& operator -- () {
-					++current;
-					return (*this);
-				}
-				Myt operator -- (int) {
-					Myt Tmp = *this;
-					++current;
-					return (Tmp);
-				}
+			}
+			
+			/* Конструктор с другим итератором */
+			/* rbegin -> end */
+			/* rend -> begin */
+			explicit reverse_iterator(RanIt X): current(X)
+			{
 
-				Myt& operator += (D N) {
-					current -= N;
-					return (*this);
-				}
+			}
+			
+			/* Возвращаю обычный итератор  */
+			RanIt base() const
+			{
+				return (current);
+			}
+			
+			template <class U>
+			reverse_iterator (const reverse_iterator<U>& X): current (X.base())
+			{
 
-				Myt operator + (D N) const {
-					return (Myt(current - N));
-				}
+			}
 
-				Myt operator - (D N) const {
-					return (Myt(current + N));
-				}
+			Rt operator * () const
+			{
+				RanIt Tmp = current;
+				return (*--Tmp);
+			}
+			
+			Pt operator -> () const
+			{
+				return (&**this);
+			}
+			
+			Myt& operator ++ ()
+			{
+				--current;
+				return (*this);
+			}
+			
+			Myt operator ++ (int){
+				Myt Tmp = *this;
+				--current;
+				return (Tmp);
+			}
 
-				Myt& operator -= (D N) {
-					current += N;
-					return (*this);
-				}
+			Myt& operator -- ()
+			{
+				++current;
+				return (*this);
+			}
 
-				Rt operator [] (D N) const {
-					return (*(*this + N));
-				}
+			Myt operator -- (int)
+			{
+				Myt Tmp = *this;
+				++current;
+				return (Tmp);
+			}
 
-			protected:
-				RanIt current;
-		};
+			Myt& operator += (D N)
+			{
+				current -= N;
+				return (*this);
+			}
+
+			Myt operator + (D N) const
+			{
+				return (Myt(current - N));
+			}
+
+			Myt operator - (D N) const
+			{
+				return (Myt(current + N));
+			}
+
+			Myt& operator -= (D N)
+			{
+				current += N;
+				return (*this);
+			}
+			Rt operator [] (D N) const
+			{
+				return (*(*this + N));
+			}
+
+		protected:
+			/* Iterarator обычный */
+			RanIt current;
+	};
 
 	// reverse_iterator TEMPLATE OPERATORS
 	template <class RanIt, class RanIt1> inline
