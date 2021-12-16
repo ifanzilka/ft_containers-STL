@@ -2,7 +2,7 @@
 #include <vector>
 
 /* Подкючаю свой вектор */
-#include "../STL/vector.hpp"
+#include "../STL/vector/vector.hpp"
 
 
 int main()

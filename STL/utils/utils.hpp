@@ -1,7 +1,6 @@
 # ifndef _FT42_UTILS
 #define _FT42_UTILS
 
-
 namespace ft
 {
 

@@ -4,13 +4,12 @@
 /* Подключаем для аллокатора */
 #include <memory>  
 
-/* Utils (swap) */
+/* Utils (swap), (copy) */
+#include "../utils/utils.hpp"
 
-#include "STL42_Utils.hpp"
-
-#include "iterator.hpp"
-#include "enable_if.hpp"
-#include "is_integral.hpp"
+#include "../iterator/iterator.hpp"
+#include "../utils/enable_if.hpp"
+#include "../utils/is_integral.hpp"
 
 namespace ft
 {
