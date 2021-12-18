@@ -6,10 +6,12 @@
 
 /* Utils (swap), (copy) */
 #include "../utils/utils.hpp"
-
-#include "../iterator/iterator.hpp"
 #include "../utils/enable_if.hpp"
 #include "../utils/is_integral.hpp"
+
+
+#include "../iterator/iterator.hpp"
+
 
 namespace ft
 {
