@@ -65,7 +65,7 @@ void test_alloc()
     
     float *pf1 = al0.address(f1);
 
-    pf1 = al.allocate(3, 0);
+    //pf1 = al.allocate(3, 0);
 }
 
 

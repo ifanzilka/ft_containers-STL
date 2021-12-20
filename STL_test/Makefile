@@ -20,6 +20,9 @@ $(NAME)		:  $(OBJ)
 $(MEMORY):
 	$(CXX) $(CXXFLAGS) main_memory.cpp -o memory
 
+$(VECTOR):
+	$(CXX) $(CXXFLAGS) main_vector.cpp -o vector
+
 start: all
 			@./test
 			@rm *.o
@@ -28,6 +31,10 @@ start: all
 start_memory: $(MEMORY)
 			@./memory
 			@rm memory
+
+start_vector: $(VECTOR)
+			@./vector
+			@rm vector
 
 clean		:
 			rm -rf $(OBJ)

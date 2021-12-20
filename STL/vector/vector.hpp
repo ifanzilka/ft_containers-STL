@@ -273,7 +273,7 @@ namespace ft
 			    pointer Q = _base::Alval.allocate(N, (void *)0);
 			    try
                 {
-				    //Ucopy(begin(), end(), Q);
+				    Ucopy(begin(), end(), Q);
 			    }
 			    catch (...)
 			    {
@@ -361,7 +361,7 @@ namespace ft
         template <class It>
 		void assign(It F, It L)
         {
-		
+            Assign(F, L, &F);
 		}
         
         void assign(size_type N, const T& X)
@@ -503,6 +503,28 @@ namespace ft
 		}
         
 
+        template <class It>
+		void Assign(It F, It L, typename ft::enable_if<ft::is_integral<It>::value, It>::type * = nullptr )
+        {
+		    assign((size_type)F, (T)L);
+		}
+			
+        template <class It>
+		void Assign(It F, It L,  typename ft::enable_if<!ft::is_integral<It>::value, It>::type * = nullptr)
+        {
+			erase(begin(), end());
+			Insert(begin(), F, L, Iter_cat(L));
+		}
+
+
+        template<class It>
+		void Insert(iterator P, It F, It L, input_iterator_tag)
+        {
+			for(; F != L; ++F, ++P)
+				P = insert(P, *F);
+		}
+
+
         /* Выделяем память и заполянем нулями*/
         bool Buy(size_type N)
         {
@@ -594,7 +616,55 @@ namespace ft
 
         /* Указатель на T .На начало , на полседний элемент , на конец */
         pointer First, Last, End;
+
     };
+
+    /*****************************************************/
+    /*             Overload operators                    */
+    /*****************************************************/
+
+    template<class T, class allocator_type> inline
+	bool operator == (const vector<T, allocator_type>& X, const vector<T, allocator_type>& Y)
+    {
+		return (X.size() == Y.size() && ft::equal(X.begin(), X.end(), Y.begin()));
+	}
+
+	template<class T, class allocator_type> inline
+	bool operator != (const vector<T, allocator_type>& X, const vector<T, allocator_type>& Y)
+    {
+	    return (!(X == Y));
+	}
+
+	template<class T, class allocator_type> inline
+	bool operator < (const vector<T, allocator_type>& X, const vector<T, allocator_type>& Y)
+    {
+		return (ft::lexicographical_compare(X.begin(), X.end(), Y.begin(), Y.end()));
+	}
+	
+    template<class T, class allocator_type> inline
+	bool operator > (const vector<T, allocator_type>& X, const vector<T, allocator_type>& Y)
+    {
+		return (Y < X);
+	}
+	
+    template<class T, class allocator_type> inline
+	bool operator >= (const vector<T, allocator_type>& X, const vector<T, allocator_type>& Y)
+    {
+		return (!(X < Y));
+	}
+	
+    template<class T, class allocator_type> inline
+	bool operator <= (const vector<T, allocator_type>& X, const vector<T, allocator_type>& Y)
+    {
+		return (!(Y < X));
+	}
+	
+	template<class T, class allocator_type> inline
+	void swap (vector<T, allocator_type>& X, vector<T, allocator_type>& Y)
+    {
+		X.swap(Y);
+	}
+
 }
 
 #endif
