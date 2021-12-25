@@ -128,6 +128,7 @@ namespace ft
         template<class It>
 		vector(It F, It L, const allocator_type& Al): _base(Al)
         {
+
 			Construct(F, L, &F);
 		}
 		
@@ -478,24 +479,23 @@ namespace ft
 
         protected:
 
-        /* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/ 
-        /* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/ 
-        /* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/ 
-        
+
+        /* Вызывается этот конструктор если пришли числа */
+        /* enable_if <True, T> */
         template <class It>
-        /* Вызывается этот конструктор если */
+       
 		void Construct (It F, It L, typename ft::enable_if<ft::is_integral<It>::value, It>::type * = nullptr)
         {
+            //std:: cout << "number\n";
+            //std:: cout << !ft::is_integral<It>::value << std::cout << "2\n";
 			size_type N = (size_type)F;
 			if (Buy(N))
 			    Last = Ufill(First, N, (T)L);
 		}
 
-        /* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/ 
-        /* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/ 
-        /* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/ 
+        /* Вызывается этот конструктор если пришли итераторы */
+        /* enable_if <false, T> */
 		template <class It>
-		/* Вызывается этот конструктор если */
         void Construct (It F, It L, typename ft::enable_if<!ft::is_integral<It>::value, It>::type * = nullptr)
         {
 			Buy(0);
@@ -623,47 +623,47 @@ namespace ft
     /*             Overload operators                    */
     /*****************************************************/
 
-    template<class T, class allocator_type> inline
-	bool operator == (const vector<T, allocator_type>& X, const vector<T, allocator_type>& Y)
-    {
-		return (X.size() == Y.size() && ft::equal(X.begin(), X.end(), Y.begin()));
-	}
+    // template<class T, class allocator_type> inline
+	// bool operator == (const vector<T, allocator_type>& X, const vector<T, allocator_type>& Y)
+    // {
+	// 	return (X.size() == Y.size() && ft::equal(X.begin(), X.end(), Y.begin()));
+	// }
 
-	template<class T, class allocator_type> inline
-	bool operator != (const vector<T, allocator_type>& X, const vector<T, allocator_type>& Y)
-    {
-	    return (!(X == Y));
-	}
+	// template<class T, class allocator_type> inline
+	// bool operator != (const vector<T, allocator_type>& X, const vector<T, allocator_type>& Y)
+    // {
+	//     return (!(X == Y));
+	// }
 
-	template<class T, class allocator_type> inline
-	bool operator < (const vector<T, allocator_type>& X, const vector<T, allocator_type>& Y)
-    {
-		return (ft::lexicographical_compare(X.begin(), X.end(), Y.begin(), Y.end()));
-	}
+	// template<class T, class allocator_type> inline
+	// bool operator < (const vector<T, allocator_type>& X, const vector<T, allocator_type>& Y)
+    // {
+	// 	return (ft::lexicographical_compare(X.begin(), X.end(), Y.begin(), Y.end()));
+	// }
 	
-    template<class T, class allocator_type> inline
-	bool operator > (const vector<T, allocator_type>& X, const vector<T, allocator_type>& Y)
-    {
-		return (Y < X);
-	}
+    // template<class T, class allocator_type> inline
+	// bool operator > (const vector<T, allocator_type>& X, const vector<T, allocator_type>& Y)
+    // {
+	// 	return (Y < X);
+	// }
 	
-    template<class T, class allocator_type> inline
-	bool operator >= (const vector<T, allocator_type>& X, const vector<T, allocator_type>& Y)
-    {
-		return (!(X < Y));
-	}
+    // template<class T, class allocator_type> inline
+	// bool operator >= (const vector<T, allocator_type>& X, const vector<T, allocator_type>& Y)
+    // {
+	// 	return (!(X < Y));
+	// }
 	
-    template<class T, class allocator_type> inline
-	bool operator <= (const vector<T, allocator_type>& X, const vector<T, allocator_type>& Y)
-    {
-		return (!(Y < X));
-	}
+    // template<class T, class allocator_type> inline
+	// bool operator <= (const vector<T, allocator_type>& X, const vector<T, allocator_type>& Y)
+    // {
+	// 	return (!(Y < X));
+	// }
 	
-	template<class T, class allocator_type> inline
-	void swap (vector<T, allocator_type>& X, vector<T, allocator_type>& Y)
-    {
-		X.swap(Y);
-	}
+	// template<class T, class allocator_type> inline
+	// void swap (vector<T, allocator_type>& X, vector<T, allocator_type>& Y)
+    // {
+	// 	X.swap(Y);
+	// }
 
 }
 
