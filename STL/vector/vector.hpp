@@ -398,7 +398,7 @@ namespace ft
         /* Insert   */
         /***********/
 
-        /* Добавление элемента */
+        /* Вставление элемента X перед итератором P (возвращаю итератор на вставленный элемент) */
 		iterator insert(iterator P, const T& X)
         {
 			size_type Off;
@@ -407,26 +407,95 @@ namespace ft
 			else
 				Off = P - begin();
 			insert(P, (size_type)1, X);
-			
             return (begin() + Off);
 		}
 
+        /* Вставление элемента X перед итератором P  (M раз) (возвращаю итератор на вставленный элемент) */
 		void insert(iterator P, size_type M, const T& X)
         {
-			
-		}
+            T Tx = X;
+			size_type N = capacity();
+			if (M == 0)
+				;
+			else if (max_size() - size() < M)
+                Xlen();
+			else if (N < size() + M)
+            {
+                /* Если не хватает места под новые M элементов*/
+				if ((max_size() - N / 2) < N)
+					N = 0;
+				else
+					N = N + N / 2;
+				if (N < size() + M)
+					N = size() + M;
 
+                pointer S = _base::Alval.allocate(N, (void *) 0);
+				pointer Q;
+				try
+                {
+				    Q = Ucopy(begin(), P, S);
+                    /* Вставляю новые элементы */
+					Q = Ufill(Q, M, Tx);
+                    /* Копирую остальную часть */
+					Ucopy(P, end(), Q);
+				}
+				catch (...)
+				{
+				    Destroy(S, Q);
+					_base::Alval.deallocate(S, N);
+					throw ;
+				}
+				if (First != 0)
+                {
+                    /* Вызываю деструторы */
+				    Destroy(First, Last);
+                    /* Очищаю */
+					_base::Alval.deallocate(First, End - First);
+				}
+				End = S + N;
+				Last = S + size() + M;
+				First = S;
+			}
+			else if ((size_type)(end() - P) < M)
+            {
+                /* Если нужно увеличить размер вектора (не переаллацируя!!! (то есть памяти хватает)) */
+			    
+                /* Последние элементы смещаю назад*/
+                Ucopy(P, end(), P.base() + M);
+				try
+                {
+				    Ufill(Last, M - (end() - P), Tx);
+				}
+				catch (...)
+                {
+				    Destroy(P.base() + M, Last + M);
+					throw;
+				}
+				Last += M;
+				ft::fill(P, end() - M, Tx);
+			}
+			else
+            {
+                iterator Oend = end();
+	            Last = Ucopy(Oend - M, Oend, Last);
+				ft::copy_backward(P, Oend - M, Oend);
+				ft::fill(P, P + M, Tx);
+			}   
+		}
+        
+        /* Вставление элементов из последовательности [F, L) */
 		template <class It>
 		void insert (iterator P, It F, It L)
         {
             //std::cout << "void insert (iterator P, It F, It L)\n";
+            Fork(P, F, L, &F);
 		}
 
         /***********/
         /* Erase   */
         /***********/
 
-        /* Стирание элементов*/
+        /* Стирание элемента P по итератору */
 	    iterator erase(iterator P)
         {
             /* копируем элементы с позции P + 1 (грубо говоря смещаем на одну позцицию)*/
@@ -467,7 +536,6 @@ namespace ft
                 vector Tmp = *this;
 				*this = X, X = Tmp;
             }
-
 		}
 
         /***********/
@@ -532,6 +600,20 @@ namespace ft
 				P = insert(P, *F);
 		}
 
+        /* Если пришли числа */
+        template <class It> 
+		void Fork(iterator P, It F, It L, typename ft::enable_if<ft::is_integral<It>::value, It>::type * = nullptr)
+        {
+		    insert(P, (size_type)F, (T)L);
+		}
+
+        /* Если пришли итераторы */
+		template <class It> 
+		void Fork(iterator P, It F, It L, typename ft::enable_if<!ft::is_integral<It>::value, It>::type * = nullptr)
+        {
+		    Insert(P, F, L, Iter_cat(F));
+		}
+
         /* Выделяем память и заполянем нулями*/
         bool Buy(size_type N)
         {
@@ -585,7 +667,7 @@ namespace ft
 			return (Q);
 		}
 
-        /* Вызываю конутсрукторы в области памяти */
+        /* Вызываю  N раз конутсруктор в области памяти и возвращаю указатель где вызывали */
     	pointer Ufill(pointer Q, size_type N, const T& X)
         {
             //std::cout<< "Standart construct: !" << X << "!\n";
@@ -607,7 +689,7 @@ namespace ft
         /*                    Utils                          */
         /*****************************************************/
 
-        /* lengt error*/
+        /* lenght error*/
         void Xlen() const
         {
             throw "vector<T> too long";

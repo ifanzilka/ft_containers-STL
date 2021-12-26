@@ -27,8 +27,29 @@ namespace ft
         return result;
     }
 
+    template<class FwdIt, class T> inline
+	void fill(FwdIt F, FwdIt L, const T& X)
+    {
+		for (; F != L; ++F)
+			*F = X;
+	}
+
+	template<class OutIt, class Sz, class T> inline
+	void fill(OutIt F, Sz N, const T& X)
+    {
+		for (; 0 < N; --N, ++F)
+			*F = X;
+	}
+
+
+    /* C Last до First  приравниваю значения в X*/
+    template <class BidIt1, class BidIt2> inline
+	BidIt2 copy_backward(BidIt1 F, BidIt1 L, BidIt2 X)
+    {
+		while (F != L)
+			*--X = *--L;
+		return (X);
+	}
 
 }
-
-
 #endif
