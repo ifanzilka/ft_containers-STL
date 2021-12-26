@@ -152,7 +152,7 @@ namespace ft
 			/*Вызывает при подачи указателя на тип */
 			explicit random_acsees_iterator(Pt P): current (P) 
 			{
-	
+
 			}
 
 			/*Вызывает при подачи итератора (просто инициализирую текущий поинтер так же)*/
@@ -176,6 +176,7 @@ namespace ft
 			/* Возвращаем ссылку при разыменовании  */
 			Rt operator * () const
 			{
+				//std::cout << "Rt operator * () const\n";
 				return (*current);
 			}
 			
@@ -207,6 +208,7 @@ namespace ft
 			
 			Myt operator -- (int)
 			{
+				//std::cout << "Myt operator --\n";
 				Myt Tmp = *this;
 				--current;
 				return (Tmp);
@@ -246,6 +248,7 @@ namespace ft
 
 			Myt operator - (D N) const
 			{
+				//std::cout << "Myt operator - (D N) const\n";
 				return (Myt(current - N));
 			}
 			

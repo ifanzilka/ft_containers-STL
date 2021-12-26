@@ -122,13 +122,13 @@ namespace ft
 		template<class It>
 		vector(It F, It L): _base()
         {
+            //std::cout << "vector(It F, It L): _base()\n";
 			Construct(F, L, &F);
 		}
 		
         template<class It>
 		vector(It F, It L, const allocator_type& Al): _base(Al)
         {
-
 			Construct(F, L, &F);
 		}
 		
@@ -164,64 +164,67 @@ namespace ft
         }
 
 
-
         allocator_type get_allocator() const
         {
 			return (_base::Alval);
 		}
 
-
         /*****************************************************/
         /*                      Iterators                    */
         /*****************************************************/
 
-        /* Здесь мы вызваем конуструкторы итераторов с нужным типом */
+        /* мы вызваем конуструктор итератора с указателем на первый элемент */
         iterator begin()
         {
 			return (iterator(First));
 		}
 
+        /* мы вызваем конуструктор итератора с указателем на первый элемент */
 		const_iterator begin() const
         {
 			return (const_iterator(First));
 		}
 
+        /* мы вызваем конуструктор итератора с указателем на последний элемент */
 		iterator end()
         {
 			return (iterator(Last));
 		}
 
+        /* мы вызваем конуструктор итератора с указателем на последний элемент */
 		const_iterator end() const
         {
 			return (const_iterator(Last));
 		}
 
+        /* мы вызваем конуструктор реверсивного  итератора с указателем на последний элемент */
 		reverse_iterator rbegin()
         {
 			return (reverse_iterator(end()));
 		}
 
+        /* мы вызваем конуструктор реверсивного  итератора с указателем на последний элемент */
 		const_reverse_iterator rbegin() const
         {
 			return (const_reverse_iterator(end()));
 		}
 
+        /* мы вызваем конуструктор реверсивного  итератора с указателем на первый элемент */
 		reverse_iterator rend()
         {
 			return (reverse_iterator(begin()));
 		}
 		
+        /* мы вызваем конуструктор реверсивного  итератора с указателем на первый элемент */
         const_reverse_iterator rend() const
         {
 			return (const_reverse_iterator(begin()));
 		}
 
-
         /******************************************************/
         /*                      Capacity                     */
         /*****************************************************/
-
-
+    
         /* Возвращает размер вектора */
         size_type size() const
         {
@@ -240,9 +243,9 @@ namespace ft
     	void resize(size_type N, T X)
         {
             if (size() < N)
-				insert (end(), N - size(), X);
+				insert(end(), N - size(), X);
 			else if (N < size())
-				erase (begin() + N, end());
+				erase(begin() + N, end());
 		}
 
 		void resize(size_type N)
@@ -340,16 +343,15 @@ namespace ft
 		/* Возвращает последний элемент */
         reference back()
         {
-		    return(*end() - 1);
+            //std::cout << "reference back()\n";
+		    return(*(end() - 1));
 		}
 
 		
         const_reference back() const
         {
-            return(*end() - 1);
+            return(*(end() - 1));
 		}
-
-
 
         /******************************************************/
         /*                    Modifiers                      */
@@ -367,7 +369,9 @@ namespace ft
         
         void assign(size_type N, const T& X)
         {
-			
+            T Tx = X;
+			erase(begin(), end());
+			insert(begin(), N, Tx);
 		}
 
         /************/
@@ -377,7 +381,7 @@ namespace ft
         /* Добавить элемент в конeц */
         void push_back(const T& X)
         {
-			
+			insert(end(), X);
 		}
 
         /************/
@@ -390,16 +394,21 @@ namespace ft
 		    erase(end() -1);
 		}
 
-
-
         /************/
         /* Insert   */
         /***********/
 
         /* Добавление элемента */
-        iterator insert(iterator P, const T& X)
+		iterator insert(iterator P, const T& X)
         {
-		
+			size_type Off;
+			if (size() == 0)
+				Off = 0;
+			else
+				Off = P - begin();
+			insert(P, (size_type)1, X);
+			
+            return (begin() + Off);
 		}
 
 		void insert(iterator P, size_type M, const T& X)
@@ -410,11 +419,10 @@ namespace ft
 		template <class It>
 		void insert (iterator P, It F, It L)
         {
-            
+            //std::cout << "void insert (iterator P, It F, It L)\n";
 		}
 
-
-        /************/
+        /***********/
         /* Erase   */
         /***********/
 
@@ -440,9 +448,9 @@ namespace ft
 			return (F);
 		}
 
-        /***********/
-        /* Swap    */
-        /***********/
+        /**********/
+        /*  Swap  */
+        /**********/
 
         /* Поменять местами содержимое */
         void swap(vector &X)
@@ -461,10 +469,9 @@ namespace ft
             }
 
 		}
-        
 
         /***********/
-        /* Clear   */
+        /*  Clear  */
         /***********/
         
         /* Очищаем */
@@ -478,7 +485,6 @@ namespace ft
         /***************/
 
         protected:
-
 
         /* Вызывается этот конструктор если пришли числа */
         /* enable_if <True, T> */
@@ -498,17 +504,19 @@ namespace ft
 		template <class It>
         void Construct (It F, It L, typename ft::enable_if<!ft::is_integral<It>::value, It>::type * = nullptr)
         {
+            //std::cout << "void Construct (It F, It L, typename ft::enable_if<!ft::is_integral<It>::value, It>::type * = nullptr)\n";
 			Buy(0);
-			//insert(begin(), F, L);
+			insert(begin(), F, L);
 		}
         
-
+        /* Вызывается этот конструктор если пришли числа */
         template <class It>
 		void Assign(It F, It L, typename ft::enable_if<ft::is_integral<It>::value, It>::type * = nullptr )
         {
 		    assign((size_type)F, (T)L);
 		}
-			
+
+        /* Вызывается этот конструктор если пришли итераторы */	
         template <class It>
 		void Assign(It F, It L,  typename ft::enable_if<!ft::is_integral<It>::value, It>::type * = nullptr)
         {
@@ -524,7 +532,6 @@ namespace ft
 				P = insert(P, *F);
 		}
 
-
         /* Выделяем память и заполянем нулями*/
         bool Buy(size_type N)
         {
@@ -539,7 +546,6 @@ namespace ft
                 return (true);
             }
         }
-
 
         /* Очищаю память */
 		void Clear()
@@ -582,6 +588,7 @@ namespace ft
         /* Вызываю конутсрукторы в области памяти */
     	pointer Ufill(pointer Q, size_type N, const T& X)
         {
+            //std::cout<< "Standart construct: !" << X << "!\n";
             pointer Qs = Q;
             try
             {
@@ -617,7 +624,7 @@ namespace ft
         /* Указатель на T .На начало , на полседний элемент , на конец */
         pointer First, Last, End;
 
-    };
+    };    
 
     /*****************************************************/
     /*             Overload operators                    */
