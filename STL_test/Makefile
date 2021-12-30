@@ -1,6 +1,8 @@
-NAME		=  	test
+NAME		= test
 
-MEMORY		=  	memory
+MEMORY		= memory
+
+VECTOR 		= vector
 
 CXX			= clang++
 

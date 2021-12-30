@@ -81,55 +81,54 @@ namespace ft
         /* Constructors */
         vector () : _base()
         {
-            Buy(0);
+            Allocate_zero(0);
         }
         
         /* Конструктор с аллокатором */
         explicit vector (const allocator_type& Al): _base(Al)
         {
-            Buy(0);
+            Allocate_zero(0);
         }
         
         /* Конструктор с размером  */
         explicit vector (size_type N): _base()
         {
-            if (Buy(N))
-                Last = Ufill(First, N, T());
+            if (Allocate_zero(N))
+                Last = Call_construct(First, N, T());
         }
         
         /* Констурктор размер и тип */
         vector (size_type N, const T& V): _base()
         {
-            if (Buy(N))
-                Last = Ufill(First, N, V);
+            if (Allocate_zero(N))
+                Last = Call_construct(First, N, V);
         }
 		
         /* Конструктор размер тип и аллокатор*/
         vector (size_type N, const T& V, const allocator_type& Al): _base(Al)
         {
-            if (Buy(N))
-                Last = Ufill(First, N, V);
+            if (Allocate_zero(N))
+                Last = Call_construct(First, N, V);
         }	
         
         /*Конустркутор с вектором */
         vector(const vector& X): _base(X.Alval)
         {
-            if (Buy(X.size()))
-                Last = Ucopy(X.begin(), X.end(), First);
+            if (Allocate_zero(X.size()))
+                Last = ItCopy(X.begin(), X.end(), First);
         }
 
         /* Конструкторы с итераторами */
 		template<class It>
 		vector(It F, It L): _base()
         {
-            //std::cout << "vector(It F, It L): _base()\n";
-			Construct(F, L, &F);
+			Construct_EnableIf(F, L, &F);
 		}
 		
         template<class It>
 		vector(It F, It L, const allocator_type& Al): _base(Al)
         {
-			Construct(F, L, &F);
+			Construct_EnableIf(F, L, &F);
 		}
 		
         /* Деструктор */
@@ -148,7 +147,7 @@ namespace ft
 		    else if (X.size() <= size())
             {
                 /* Если наш вектор больше чем тот откуда присваивание */
-		    	pointer Q = Ucopy(X.begin(), X.end(), First);
+		    	pointer Q = ItCopy(X.begin(), X.end(), First);
 		    	Destroy(Q, Last);
 		    	Last = First + X.size();
 		    }
@@ -157,8 +156,8 @@ namespace ft
                 /* Если размер нового ветора больше */
 		    	Destroy(First, Last);
 		    	_base::Alval.deallocate(First, End - First);
-		    	if(Buy(X.size()))
-		    		Last = Ucopy(X.begin(), X.end(), First);
+		    	if(Allocate_zero(X.size()))
+		    		Last = ItCopy(X.begin(), X.end(), First);
 		    }
 		    return (*this);
         }
@@ -233,7 +232,7 @@ namespace ft
 			return (Last - First);
 		}
 
-        /* Возвращет размер аллоцированной памяти */
+        /* Возвращет максимальный размер аллоцированной памяти */
         size_type max_size() const
         {
 		    return (_base::Alval.max_size());
@@ -271,13 +270,13 @@ namespace ft
     	void reserve(size_type N)
         {
 		    if (max_size() < N) // Вызываю исключение
-			    Xlen();
+			    length_error();
 		    else if (capacity() < N)
 		    {
 			    pointer Q = _base::Alval.allocate(N, (void *)0);
 			    try
                 {
-				    Ucopy(begin(), end(), Q);
+				    ItCopy(begin(), end(), Q);
 			    }
 			    catch (...)
 			    {
@@ -316,14 +315,14 @@ namespace ft
         const_reference at(size_type N) const
         {
 			if (size() <= N)
-                Xran();
+                out_range_error();
 			return (*(begin() + N));
 		}
 
 		reference at(size_type N)
         {
             if (size() <= N)
-				Xran();
+				out_range_error();
 			return (*(begin() + N));	
 		}
 
@@ -360,11 +359,14 @@ namespace ft
         /***********/
         /* Assign */
         /**********/
+
         /* Присваивает вектору новое содержимое, заменяя его текущее содержимое и соответствующим образом изменяя его размер. */
         template <class It>
 		void assign(It F, It L)
         {
-            Assign(F, L, &F);
+            erase(begin(), end());
+			Insert(begin(), F, L, Iter_cat(L));
+            //Assign_EnableIf(F, L, &F);
 		}
         
         void assign(size_type N, const T& X)
@@ -418,7 +420,7 @@ namespace ft
 			if (M == 0)
 				;
 			else if (max_size() - size() < M)
-                Xlen();
+                length_error();
 			else if (N < size() + M)
             {
                 /* Если не хватает места под новые M элементов*/
@@ -433,11 +435,11 @@ namespace ft
 				pointer Q;
 				try
                 {
-				    Q = Ucopy(begin(), P, S);
+				    Q = ItCopy(begin(), P, S);
                     /* Вставляю новые элементы */
-					Q = Ufill(Q, M, Tx);
+					Q = Call_construct(Q, M, Tx);
                     /* Копирую остальную часть */
-					Ucopy(P, end(), Q);
+					ItCopy(P, end(), Q);
 				}
 				catch (...)
 				{
@@ -461,10 +463,10 @@ namespace ft
                 /* Если нужно увеличить размер вектора (не переаллацируя!!! (то есть памяти хватает)) */
 			    
                 /* Последние элементы смещаю назад*/
-                Ucopy(P, end(), P.base() + M);
+                ItCopy(P, end(), P.base() + M);
 				try
                 {
-				    Ufill(Last, M - (end() - P), Tx);
+				    Call_construct(Last, M - (end() - P), Tx);
 				}
 				catch (...)
                 {
@@ -477,7 +479,7 @@ namespace ft
 			else
             {
                 iterator Oend = end();
-	            Last = Ucopy(Oend - M, Oend, Last);
+	            Last = ItCopy(Oend - M, Oend, Last);
 				ft::copy_backward(P, Oend - M, Oend);
 				ft::fill(P, P + M, Tx);
 			}   
@@ -495,7 +497,7 @@ namespace ft
         /* Erase   */
         /***********/
 
-        /* Стирание элемента P по итератору */
+        /* Стирание элемента P по итератору или в промежутке */
 	    iterator erase(iterator P)
         {
             /* копируем элементы с позции P + 1 (грубо говоря смещаем на одну позцицию)*/
@@ -505,7 +507,7 @@ namespace ft
 			return (P);
 		}
 		
-        /*  Стираем в промежутке */
+       /* Стирание элемента P по итератору или в промежутке */
         iterator erase(iterator F, iterator L)
         {
         	if (F != L)
@@ -557,43 +559,24 @@ namespace ft
         /* Вызывается этот конструктор если пришли числа */
         /* enable_if <True, T> */
         template <class It>
-       
-		void Construct (It F, It L, typename ft::enable_if<ft::is_integral<It>::value, It>::type * = nullptr)
+		void Construct_EnableIf(It F, It L, typename ft::enable_if<ft::is_integral<It>::value, It>::type * = nullptr)
         {
-            //std:: cout << "number\n";
-            //std:: cout << !ft::is_integral<It>::value << std::cout << "2\n";
 			size_type N = (size_type)F;
-			if (Buy(N))
-			    Last = Ufill(First, N, (T)L);
+			if (Allocate_zero(N))
+			    Last = Call_construct(First, N, (T)L);
 		}
 
         /* Вызывается этот конструктор если пришли итераторы */
         /* enable_if <false, T> */
 		template <class It>
-        void Construct (It F, It L, typename ft::enable_if<!ft::is_integral<It>::value, It>::type * = nullptr)
+        void Construct_EnableIf(It F, It L, typename ft::enable_if<!ft::is_integral<It>::value, It>::type * = nullptr)
         {
-            //std::cout << "void Construct (It F, It L, typename ft::enable_if<!ft::is_integral<It>::value, It>::type * = nullptr)\n";
-			Buy(0);
+			Allocate_zero(0);
 			insert(begin(), F, L);
 		}
-        
-        /* Вызывается этот конструктор если пришли числа */
-        template <class It>
-		void Assign(It F, It L, typename ft::enable_if<ft::is_integral<It>::value, It>::type * = nullptr )
-        {
-		    assign((size_type)F, (T)L);
-		}
-
-        /* Вызывается этот конструктор если пришли итераторы */	
-        template <class It>
-		void Assign(It F, It L,  typename ft::enable_if<!ft::is_integral<It>::value, It>::type * = nullptr)
-        {
-			erase(begin(), end());
-			Insert(begin(), F, L, Iter_cat(L));
-		}
-
-
+    
         template<class It>
+        /* */
 		void Insert(iterator P, It F, It L, input_iterator_tag)
         {
 			for(; F != L; ++F, ++P)
@@ -604,6 +587,7 @@ namespace ft
         template <class It> 
 		void Fork(iterator P, It F, It L, typename ft::enable_if<ft::is_integral<It>::value, It>::type * = nullptr)
         {
+            //std::cout<<"Fork1\n";
 		    insert(P, (size_type)F, (T)L);
 		}
 
@@ -611,11 +595,12 @@ namespace ft
 		template <class It> 
 		void Fork(iterator P, It F, It L, typename ft::enable_if<!ft::is_integral<It>::value, It>::type * = nullptr)
         {
+            //std::cout<<"Fork2\n";
 		    Insert(P, F, L, Iter_cat(F));
 		}
 
-        /* Выделяем память и заполянем нулями*/
-        bool Buy(size_type N)
+        /* Выделяем память и заполянем нулями и инициализируем указатели*/
+        bool Allocate_zero(size_type N)
         {
             First = 0, Last = 0, End = 0;
             if (N == 0)
@@ -629,7 +614,7 @@ namespace ft
             }
         }
 
-        /* Очищаю память */
+        /* Вызываю деструкторы и очищаю память */
 		void Clear()
         {
             if (First != 0)
@@ -649,9 +634,9 @@ namespace ft
         }
 
 
-        /* Копируем зачения от First до Last*/
+        /* Копируем зачения от First до Last Ucopy*/
         template<class It>
-		pointer Ucopy(It F, It L, pointer Q)
+		pointer ItCopy(It F, It L, pointer Q)
         {
 			pointer Qs = Q;
 			try
@@ -667,10 +652,9 @@ namespace ft
 			return (Q);
 		}
 
-        /* Вызываю  N раз конутсруктор в области памяти и возвращаю указатель где вызывали */
-    	pointer Ufill(pointer Q, size_type N, const T& X)
+        /* Вызываю  N раз конструктор в области памяти и возвращаю указатель где вызывали Ufill*/
+    	pointer Call_construct(pointer Q, size_type N, const T& X)
         {
-            //std::cout<< "Standart construct: !" << X << "!\n";
             pointer Qs = Q;
             try
             {
@@ -689,15 +673,15 @@ namespace ft
         /*                    Utils                          */
         /*****************************************************/
 
-        /* lenght error*/
-        void Xlen() const
+        /* lenght error Xlen*/
+        void length_error() const
         {
             throw "vector<T> too long";
 		    //throw std::length_error("vector<T> too long");
 		}
 		
-        /*  Out of range */
-        void Xran() const
+        /*  Out of range  Xran*/
+        void out_range_error() const
         {
             throw "vector<T> subscript";
 		    //throw std::length_error("vector<T> subscript");

@@ -41,7 +41,6 @@ namespace ft
 			*F = X;
 	}
 
-
     /* C Last до First  приравниваю значения в X*/
     template <class BidIt1, class BidIt2> inline
 	BidIt2 copy_backward(BidIt1 F, BidIt1 L, BidIt2 X)

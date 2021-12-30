@@ -4,6 +4,37 @@
 #include <type_traits>
 #include <iostream>
 
+/*
+**  Класс признака, определяющий, является ли T типом функции.
+**
+**  Он наследуется от integral_constant как либо true_type, либо false_type.
+**
+*/
+
+/* ORIGINAL */
+
+// #include <iostream>
+// #include <type_traits>
+
+// template <unsigned n>
+// struct factorial : std::integral_constant <int, n * factorial< n - 1>::value>
+// {
+
+// };
+
+// template <>
+// struct factorial<0> : std::integral_constant<int, 1>
+// {
+
+// };
+
+// int main()
+// {
+//   std::cout << factorial<5>::value;  // constexpr (no calculations on runtime)
+//   return 0;
+// }
+
+
 namespace ft
 {
 
