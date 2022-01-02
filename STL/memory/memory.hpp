@@ -75,13 +75,13 @@ namespace ft
         /* Конструкторы  */
         allocator()
         {
-            std::cout << "1\n";
+            //std::cout << "1\n";
         }
 
         /* Конструктор c аллокатором  */
         allocator(const allocator <T> &)
         {
-            std::cout << "2\n";
+            //std::cout << "2\n";
         }
 
         /* Создаем конструктор на основе другого типа */
