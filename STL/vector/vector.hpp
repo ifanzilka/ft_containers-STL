@@ -1,14 +1,17 @@
 #ifndef _FT42VECTOR
 #define _FT42VECTOR
 
+/* Page 151 */
+
 /* Подключаем для аллокатора */
 #include <memory>  
 
-/* Utils (swap), (copy) */
+
+/* Utils (swap), (copy) (pair) */
 #include "../utils/utils.hpp"
 #include "../utils/enable_if.hpp"
 #include "../utils/is_integral.hpp"
-
+#include "vector_utils.hpp"
 
 #include "../iterator/iterator.hpp"
 
@@ -33,7 +36,7 @@ namespace ft
         
         typedef std::allocator<T> allocator_type;
         allocator_type Alval;
-
+    
         /*  Use function : 
         **  Alval.allocate / Alval.deallocate
         **  Alval.destroy
@@ -269,8 +272,8 @@ namespace ft
         /* Запросить изменение вместимости */
     	void reserve(size_type N)
         {
-		    if (max_size() < N) // Вызываю исключение
-			    length_error();
+		    if (max_size() < N) 
+			    length_error(); // Исключение
 		    else if (capacity() < N)
 		    {
 			    pointer Q = _base::Alval.allocate(N, (void *)0);
@@ -322,7 +325,7 @@ namespace ft
 		reference at(size_type N)
         {
             if (size() <= N)
-				out_range_error();
+				out_range_error(); // Исключение
 			return (*(begin() + N));	
 		}
 
@@ -489,8 +492,7 @@ namespace ft
 		template <class It>
 		void insert (iterator P, It F, It L)
         {
-            //std::cout << "void insert (iterator P, It F, It L)\n";
-            Fork(P, F, L, &F);
+            Inset_EnableIf(P, F, L, &F);
 		}
 
         /***********/
@@ -574,28 +576,26 @@ namespace ft
 			Allocate_zero(0);
 			insert(begin(), F, L);
 		}
-    
+
+        /* Вставление элементов из последовтельности [F,L) */
         template<class It>
-        /* */
 		void Insert(iterator P, It F, It L, input_iterator_tag)
         {
 			for(; F != L; ++F, ++P)
 				P = insert(P, *F);
 		}
 
-        /* Если пришли числа */
+        /* Вставление элементов из последовтельности [F,L) если пришли числа */
         template <class It> 
-		void Fork(iterator P, It F, It L, typename ft::enable_if<ft::is_integral<It>::value, It>::type * = nullptr)
+		void Inset_EnableIf(iterator P, It F, It L, typename ft::enable_if<ft::is_integral<It>::value, It>::type * = nullptr)
         {
-            //std::cout<<"Fork1\n";
 		    insert(P, (size_type)F, (T)L);
 		}
 
-        /* Если пришли итераторы */
+        /* Вставление элементов из последовтельности [F,L) если пришли итераторы  */
 		template <class It> 
-		void Fork(iterator P, It F, It L, typename ft::enable_if<!ft::is_integral<It>::value, It>::type * = nullptr)
+		void Inset_EnableIf(iterator P, It F, It L, typename ft::enable_if<!ft::is_integral<It>::value, It>::type * = nullptr)
         {
-            //std::cout<<"Fork2\n";
 		    Insert(P, F, L, Iter_cat(F));
 		}
 
@@ -634,7 +634,7 @@ namespace ft
         }
 
 
-        /* Копируем зачения от First до Last Ucopy*/
+        /* Копируем зачения от First до Last (Ucopy) */
         template<class It>
 		pointer ItCopy(It F, It L, pointer Q)
         {
@@ -696,48 +696,48 @@ namespace ft
     /*             Overload operators                    */
     /*****************************************************/
 
-    // template<class T, class allocator_type> inline
-	// bool operator == (const vector<T, allocator_type>& X, const vector<T, allocator_type>& Y)
-    // {
-	// 	return (X.size() == Y.size() && ft::equal(X.begin(), X.end(), Y.begin()));
-	// }
+    template<class T, class allocator_type> inline
+	bool operator == (const vector<T, allocator_type>& X, const vector<T, allocator_type>& Y)
+    {
+	    return (X.size() == Y.size() && ft::equal(X.begin(), X.end(), Y.begin()));
+	}
 
-	// template<class T, class allocator_type> inline
-	// bool operator != (const vector<T, allocator_type>& X, const vector<T, allocator_type>& Y)
-    // {
-	//     return (!(X == Y));
-	// }
+	template<class T, class allocator_type> inline
+	bool operator != (const vector<T, allocator_type>& X, const vector<T, allocator_type>& Y)
+    {
+	    return (!(X == Y));
+	}
 
-	// template<class T, class allocator_type> inline
-	// bool operator < (const vector<T, allocator_type>& X, const vector<T, allocator_type>& Y)
-    // {
-	// 	return (ft::lexicographical_compare(X.begin(), X.end(), Y.begin(), Y.end()));
-	// }
+	template<class T, class allocator_type> inline
+	bool operator < (const vector<T, allocator_type>& X, const vector<T, allocator_type>& Y)
+    {
+		return (ft::lexicographical_compare(X.begin(), X.end(), Y.begin(), Y.end()));
+	}
 	
-    // template<class T, class allocator_type> inline
-	// bool operator > (const vector<T, allocator_type>& X, const vector<T, allocator_type>& Y)
-    // {
-	// 	return (Y < X);
-	// }
+    template<class T, class allocator_type> inline
+	bool operator > (const vector<T, allocator_type>& X, const vector<T, allocator_type>& Y)
+    {
+		return (Y < X);
+	}
 	
-    // template<class T, class allocator_type> inline
-	// bool operator >= (const vector<T, allocator_type>& X, const vector<T, allocator_type>& Y)
-    // {
-	// 	return (!(X < Y));
-	// }
+    template<class T, class allocator_type> inline
+	bool operator >= (const vector<T, allocator_type>& X, const vector<T, allocator_type>& Y)
+    {
+		return (!(X < Y));
+	}
 	
-    // template<class T, class allocator_type> inline
-	// bool operator <= (const vector<T, allocator_type>& X, const vector<T, allocator_type>& Y)
-    // {
-	// 	return (!(Y < X));
-	// }
+    template<class T, class allocator_type> inline
+	bool operator <= (const vector<T, allocator_type>& X, const vector<T, allocator_type>& Y)
+    {
+		return (!(Y < X));
+	}
 	
-	// template<class T, class allocator_type> inline
-	// void swap (vector<T, allocator_type>& X, vector<T, allocator_type>& Y)
-    // {
-	// 	X.swap(Y);
-	// }
-
+	template<class T, class allocator_type> inline
+	void swap (vector<T, allocator_type>& X, vector<T, allocator_type>& Y)
+    {
+		X.swap(Y);
+	}
+    
 }
 
 #endif

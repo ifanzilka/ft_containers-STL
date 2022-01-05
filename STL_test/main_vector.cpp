@@ -54,30 +54,34 @@ void test_vector()
 	ft::vector<char> v3(v1a.begin(), v1a.end());
 	assert(v3.size() == 6 && v3.front() =='x');
 
-	 /* Создали константный вектор на итераторов*/
+	/* Создали константный вектор на итераторов*/
 	const ft::vector<char> v4 (v1a.begin(), v1a.end(), al);
 	assert(v4.size() == 6 && v4.back() == 'x');
 
+	/* Приравнивание */
 	v0 = v4;
-
 	assert(v0.size() == 6 && v0.at(5) == 'x');
 	assert(v0[0] == 'x' && v0.at(5) == 'x');
 
+	/* меняем размер вектора*/
 	v0.reserve(12);
 	assert(12 <= v0.capacity());
 
+	/* Уменьшаем размер вектора*/
 	v0.resize(8);
 	assert(v0.size() == 8 && v0.back() == '\0');
 	
+	/* меняем размер вектора*/
 	v0.resize(10, 'z');
 	assert(v0.size() == 10 && v0.back() == 'z');
 	assert(v0.size() <= v0.max_size());
 
-	ft::vector<char>::iterator p_it(v0.begin());
-	ft::vector<char>::const_iterator p_cit(v4.begin());
-	ft::vector<char>::reverse_iterator p_rit(v0.rbegin());
-	ft::vector<char>::const_reverse_iterator p_crit(v4.rbegin());
+	ft::vector<char>::iterator		 			p_it(v0.begin());
+	ft::vector<char>::const_iterator			p_cit(v4.begin());
+	ft::vector<char>::reverse_iterator 			p_rit(v0.rbegin());
+	ft::vector<char>::const_reverse_iterator 	p_crit(v4.rbegin());
 
+	/* Тест  функций иетраторов */
 	assert(*p_it == 'x' && *--(p_it = v0.end()) == 'z');
 	assert(*p_cit == 'x' && *--(p_cit = v4.end()) == 'x');
 
@@ -86,8 +90,10 @@ void test_vector()
 
 	assert(v0.front() == 'x' && v4.front() == 'x');
 
+	/* смотрим на работу функций*/
 	v0.push_back('a');
 	assert(v0.back() == 'a');
+	
 	v0.pop_back();
 	assert(v0.back() == 'z' && v4.back() == 'x');
 
@@ -97,6 +103,7 @@ void test_vector()
 	v0.assign(4, 'w');
 	assert(v0.size() == 4 && v0.front() == 'w');
 
+	/* Test insert*/
 	assert(*v0.insert(v0.begin(), 'a') == 'a');
 	assert(v0.front() == 'a' && *++v0.begin() == 'w');
 
@@ -119,28 +126,30 @@ void test_vector()
 	v0.swap(v1);
 	assert(!v0.empty() && v1.empty());
 
-	// assert(v1 == v1 && v0 > v1);
-	// assert(v0 != v1 && v1 < v0);
-	// assert(v0 >= v1 && v1 <= v0 && v1 >= v1 && v0 <= v0);
+	assert(v1 == v1 && v0 > v1);
+	assert(v0 != v1 && v1 < v0);
+	assert(v0 >= v1 && v1 <= v0 && v1 >= v1 && v0 <= v0);
 
-	// ft::vector<ft::pair<int, char>, std::allocator<ft::pair<int, char> > > pair;
+	ft::vector<ft::pair<int, char>, std::allocator<ft::pair<int, char> > > pair;
 
-	// pair.insert(pair.begin(), ft::make_pair(4, 'a'));
+	pair.insert(pair.begin(), ft::make_pair(4, 'a'));
 
-	// ft::vector<ft::pair<int, char>, std::allocator<ft::pair<int, char> > >::iterator itp(pair.begin());
+	ft::vector<ft::pair<int, char>, std::allocator<ft::pair<int, char> > >::iterator itp(pair.begin());
 
-	// assert(itp->first == 4 && itp->second == 'a') ;
+	assert(itp->first == 4 && itp->second == 'a') ;
 
-	// try 
-	// {
-	// 	pair.at(10);
-	// 	std::cerr << "No exception is thrown" << std::endl;
-	// 	assert(false);
-	// }
-	// catch(...){assert(true);}
+	try 
+	{
+		pair.at(10);
+		std::cerr << "No exception is thrown" << std::endl;
+		assert(false);
+	}
+	catch(...)
+	{
+		assert(true);
+	}
 
 	std::cout << "SUCCESS testing  <vector>" << std::endl;
-
 }
 
 

@@ -3,7 +3,7 @@
 #include "iterator_tag.hpp"
 
 /*
-** Iterator такая штука которая хранит указатель на тип 
+** Iterator - обертка над указателем на тип 
 **
 */
 
@@ -185,27 +185,30 @@ namespace ft
 				return (&**this);
 			}
 			
-			/* Инкриментируем */
-			Myt& operator++ ()
+			/* Инкриментируем (слева от итератора) */
+			Myt& operator ++ ()
 			{
 				++current;
 				return (*this);
 			}
 			
+			/* Инкриментируем (cправа от итератора) */
 			Myt operator ++ (int)
 			{
+				std::cout << "1\n";
 				Myt Tmp = *this;
 				++current;
 				return (Tmp);
 			}
 			
-			/* Дикрементируем */
-			Myt& operator-- ()
+			/* Дикрементируем (слева от итератора)*/
+			Myt& operator -- ()
 			{
 				--current;
 				return (*this);
 			}
 			
+			/* Дикрементируем (cправа от итератора) */
 			Myt operator -- (int)
 			{
 				//std::cout << "Myt operator --\n";
