@@ -1,5 +1,5 @@
-#ifndef _FT42VECTOR_UTILS
-# define _FT42VECTOR_UTILS
+#ifndef FT_VECTOR_UTILS
+# define FT_VECTOR_UTILS
 
 #include "../utils/pair.hpp"
 

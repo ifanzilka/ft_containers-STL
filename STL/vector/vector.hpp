@@ -1,5 +1,5 @@
-#ifndef _FT42VECTOR
-#define _FT42VECTOR
+#ifndef FT_VECTOR
+#define FT_VECTOR
 
 /* Page 151 */
 
@@ -737,7 +737,6 @@ namespace ft
     {
 		X.swap(Y);
 	}
-    
 }
 
 #endif

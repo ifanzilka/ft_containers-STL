@@ -1,5 +1,5 @@
-#ifndef _FT42_PAIR
-# define _FT42_PAIR
+#ifndef FT_PAIR
+# define FT_PAIR
 
 
 /*
@@ -22,11 +22,13 @@ namespace ft
         /* Constructors */
         pair(): first(), second() {}
 
+        /* Constructors */
         pair(const T& x, const U& y):first(x), second(y)
         {
 
         }
         
+        /* Constructors */
         template<class V, class W>
         pair(const pair<V, W>& pr): first(pr.first), second(pr.second)
         {
@@ -50,8 +52,7 @@ namespace ft
 	{
 		return pair<T, U>(x, y);
 	}
-
-
+    
 	template <class T, class U>
 	bool operator == (const pair<T, U>& x, const pair<T, U>& y)
     {

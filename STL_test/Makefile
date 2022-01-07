@@ -4,6 +4,8 @@ MEMORY		= memory
 
 VECTOR 		= vector
 
+STACK 		= stack
+
 CXX			= clang++
 
 CXXFLAGS 	= #-Wall -Wextra -Werror -std=c++98
@@ -25,6 +27,11 @@ $(MEMORY):
 $(VECTOR):
 	$(CXX) $(CXXFLAGS) main_vector.cpp -o vector
 
+$(STACK):
+	$(CXX) $(CXXFLAGS) main_stack.cpp -o stack
+
+
+
 start: all
 			@./test
 			@rm *.o
@@ -37,6 +44,10 @@ start_memory: $(MEMORY)
 start_vector: $(VECTOR)
 			@./vector
 			@rm vector
+
+start_stack: $(STACK)
+			@./stack
+			@rm stack
 
 clean		:
 			rm -rf $(OBJ)

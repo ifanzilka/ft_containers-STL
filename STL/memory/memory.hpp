@@ -1,5 +1,5 @@
-#ifndef _FT42MEMORY
-# define _FT42MEMORY
+#ifndef FT_MEMORY
+# define FT_MEMORY
 
 /* page 175 ... */
 

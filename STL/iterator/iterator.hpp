@@ -1,5 +1,5 @@
-#ifndef _FT42ITERATOR
-#define _FT42ITERATOR
+#ifndef FT_ITERATOR
+#define FT_ITERATOR
 #include "iterator_tag.hpp"
 
 /*
@@ -195,7 +195,6 @@ namespace ft
 			/* Инкриментируем (cправа от итератора) */
 			Myt operator ++ (int)
 			{
-				std::cout << "1\n";
 				Myt Tmp = *this;
 				++current;
 				return (Tmp);
@@ -251,7 +250,6 @@ namespace ft
 
 			Myt operator - (D N) const
 			{
-				//std::cout << "Myt operator - (D N) const\n";
 				return (Myt(current - N));
 			}
 			

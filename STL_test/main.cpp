@@ -5,9 +5,12 @@
 #include "../STL/vector/vector.hpp"
 
 
-// int main()
-// {
-    
+ int main()
+ {
+     std::vector<int> a;
+ }    
+//     ft::vector<int> v;
+//     ft::vector<int> v;
 //     ft::vector<int> v;
 //     std::cout << v.size();
     
