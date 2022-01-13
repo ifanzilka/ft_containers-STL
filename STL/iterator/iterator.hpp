@@ -416,8 +416,7 @@ namespace ft
 	{
 		return (!(X ==Y));
 	}
-
-
+	
 	template <class RanIt, class RanIt1> inline
 	bool operator < (const reverse_iterator<RanIt>& X, const reverse_iterator<RanIt1>& Y)
 	{
