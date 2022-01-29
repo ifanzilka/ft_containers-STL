@@ -70,6 +70,33 @@ namespace ft
 		typedef T& 							reference;
 	};
 
+	
+
+	// template <class Iter>
+	// int foo(Iter first, Iter second, const bidirectional_iterator_tag* p = NULL) 
+	// {
+	// 	int i  = 0;
+	// 	while (first < second)
+	// 	{
+	// 		first++;
+	// 		i++;
+	// 	}
+	// 	return (i);
+	// }
+
+	// template <class Iter>
+	// int foo(Iter first, Iter second, const random_access_iterator_tag* p = NULL) 
+	// {
+	// 	int i = (int)(second - first);
+	// 	return (i);
+	// }
+
+	// template <class Iter>
+	// int foo(Iter first, Iter second) 
+	// {
+	// 	ft::iterator_traits<Iter>::iterator_category *p;
+	// 	return foo(first, second, p);
+	// }
 
 	template < class C, class T, class D, class Pt, class Rt> inline
 	/* Штука чтобы определит с каким итератором работаем для послседующих перегрузок*/
@@ -416,7 +443,7 @@ namespace ft
 	{
 		return (!(X ==Y));
 	}
-	
+	 
 	template <class RanIt, class RanIt1> inline
 	bool operator < (const reverse_iterator<RanIt>& X, const reverse_iterator<RanIt1>& Y)
 	{
