@@ -53,7 +53,7 @@ void test_alloc()
 {
     float f1;
     Myal::size_type *p_size = (size_t)0;
-    Myal::difference_type *p_val = (ptrdiff_t *)0;
+    //Myal::difference_type *p_val = (ptrdiff_t *)0;
     Myal::pointer *p_ptr = (float **)0;
     Myal::const_pointer *p_cptr = (const float **)0; 
     Myal::reference  p_ref = f1; 
@@ -63,6 +63,8 @@ void test_alloc()
     Myal al0 = get_al();
     Myal al(al0);
     
+    //ft::allocator<void>::pointer *pv_ptr = (void **)0;
+
     float *pf1 = al0.address(f1);
 
     //pf1 = al.allocate(3, 0);
