@@ -6,6 +6,8 @@ VECTOR 		= vector
 
 STACK 		= stack
 
+MAP 		= map
+
 CXX			= clang++
 
 CXXFLAGS 	= #-Wall -Wextra -Werror -std=c++98
@@ -30,6 +32,8 @@ $(VECTOR):
 $(STACK):
 	$(CXX) $(CXXFLAGS) main_stack.cpp -o stack
 
+$(MAP):
+	$(CXX) $(CXXFLAGS) main_map.cpp -o map
 
 
 start: all
@@ -48,6 +52,10 @@ start_vector: $(VECTOR)
 start_stack: $(STACK)
 			@./stack
 			@rm stack
+
+start_map:	$(MAP)
+			@./map
+			@rm map
 
 clean		:
 			rm -rf $(OBJ)
